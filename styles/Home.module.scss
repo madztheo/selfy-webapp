@@ -10,7 +10,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
     .logo {
       width: 200px;
       height: 200px;
@@ -18,6 +17,28 @@
       position: relative;
       border-radius: 25px;
       overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .name {
+      font-size: 2em;
+      font-weight: 700;
+      color: #000;
+      margin: 0;
+    }
+    .email {
+      font-size: 1em;
+      font-weight: 500;
+      color: #4b4b4b;
+      margin: 10px 0 0 0;
+    }
+    .address {
+      font-size: 0.8em;
+      font-weight: 300;
+      color: #4b4b4b;
+      margin: 10px 0 0 0;
+    }
+    .button {
+      margin-top: 20px;
     }
   }
 }

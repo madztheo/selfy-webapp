@@ -11,6 +11,7 @@ export default function Home() {
   const [safeAuthKit, setSafeAuthKit] =
     useState<SafeAuthKit<Web3AuthModalPack>>();
   const [userInfo, setUserInfo] = useState<any>();
+  const [address, setAddress] = useState<string>();
 
   useEffect(() => {
     (async () => {
@@ -25,6 +26,7 @@ export default function Home() {
     }
     await safeAuthKit.signIn();
     const userInfo = await safeAuthKit.getUserInfo();
+    setAddress(safeAuthKit.safeAuthData?.eoa);
     setUserInfo(userInfo);
   };
 
@@ -52,7 +54,7 @@ export default function Home() {
               />
             </div>
             <Button
-              className={styles.connect__button}
+              className={styles.button}
               text="Connect"
               onClick={onConnect}
             />
@@ -72,8 +74,11 @@ export default function Home() {
                 />
               </div>
             )}
+            <p className={styles.name}>{userInfo?.name}</p>
+            <p className={styles.email}>{userInfo?.email}</p>
+            <p className={styles.address}>{address}</p>
             <Button
-              className={styles.connect__button}
+              className={styles.button}
               text="Sign out"
               onClick={onSignOut}
             />
