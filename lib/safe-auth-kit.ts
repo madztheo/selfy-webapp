@@ -2,6 +2,8 @@ import { SafeAuthKit, Web3AuthModalPack } from "@safe-global/auth-kit";
 import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base";
 import { Web3AuthOptions } from "@web3auth/modal";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import { ethers } from "ethers";
+import Safe, { EthersAdapter } from "@safe-global/protocol-kit";
 
 const WEB3_AUTH_CLIENT_ID = process.env
   .NEXT_PUBLIC_WEB3_AUTH_CLIENT_ID as string;
@@ -54,4 +56,15 @@ export async function initSafeAuthKit() {
   });
 
   return safeAuthKit;
+}
+
+export async function signMessage(
+  safeAuthKit: SafeAuthKit<Web3AuthModalPack>,
+  message: string
+) {
+  const provider = new ethers.providers.Web3Provider(
+    safeAuthKit.getProvider()!
+  );
+  const signer = provider.getSigner();
+  return signer.signMessage(message);
 }
