@@ -1,0 +1,42 @@
+@import "../../styles/constants.scss";
+
+.container {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-bottom: 1px solid $primaryColor;
+  padding: 15px 50px;
+  height: 75px;
+  background-color: white;
+  .logo {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    margin: -20px 0;
+  }
+  .nav {
+    margin-left: 50px;
+    ul {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+      list-style: none;
+      li {
+        a {
+          transition: 200ms ease;
+          font-size: 1.1em;
+          font-weight: 500;
+          &:hover {
+            color: $primaryColor;
+          }
+        }
+      }
+    }
+  }
+  .button {
+    margin-left: auto;
+  }
+}

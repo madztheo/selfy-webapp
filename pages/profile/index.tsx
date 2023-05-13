@@ -1,0 +1,64 @@
+import { Header } from "@/components/header/Header";
+import styles from "../../styles/Profile.module.scss";
+import Image from "next/image";
+import selfyBadge from "../../public/images/badges/selfy-badge.svg";
+
+const BADGES = [
+  {
+    name: "Selfy",
+    image: selfyBadge,
+  },
+  {
+    name: "Selfy",
+    image: selfyBadge,
+  },
+  {
+    name: "Selfy",
+    image: selfyBadge,
+  },
+  {
+    name: "Selfy",
+    image: selfyBadge,
+  },
+];
+
+export default function Profile() {
+  return (
+    <div className={styles.container}>
+      <Header
+        onSismoConnect={(vaultId) => {
+          console.log("vaultId", vaultId);
+        }}
+      />
+      <div className={styles.content}>
+        <div className={styles.left}>
+          <h2 className={styles.title}>My badges</h2>
+          <div className={styles.badges}>
+            {BADGES.map((badge, index) => (
+              <div className={styles.badge} key={index}>
+                <div className={styles.badge__icon}>
+                  <Image
+                    src={badge.image}
+                    alt={badge.name}
+                    fill
+                    style={{
+                      objectFit: "contain",
+                    }}
+                  />
+                </div>
+                <p className={styles.badge__name}>{badge.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className={styles.right}>
+          <div className={styles.profile__pic}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+              <path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464H398.7c-8.9-63.3-63.3-112-129-112H178.3c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

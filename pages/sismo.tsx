@@ -12,6 +12,7 @@ import {
 import { SafeAuthKitContext } from "./_app";
 import { claimBadgeWithSafeAuthKit } from "@/lib/selfy-badge";
 import { initSafeAuthKit } from "@/lib/safe-auth-kit";
+import { Header } from "@/components/header/Header";
 
 const config: SismoConnectClientConfig = {
   appId: process.env.NEXT_PUBLIC_SISMO_APP_ID!,

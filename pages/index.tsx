@@ -42,6 +42,13 @@ export default function Home() {
     setAddress(safeAuthKit.safeAuthData?.eoa);
     setUserInfo(userInfo);
     setLoading(false);
+    setAlert({
+      message: `Connected with address ${safeAuthKit.safeAuthData?.eoa}`,
+      error: false,
+    });
+    setTimeout(() => {
+      router.push("/profile");
+    }, 2000);
   };
 
   const onSignOut = async () => {
@@ -83,28 +90,24 @@ export default function Home() {
         visible={!!alert.message}
       />
       <div className={styles.content}>
-        {!userInfo && (
-          <>
-            <div className={styles.logo}>
-              <Image
-                src={logo}
-                alt="Selfy logo"
-                fill
-                style={{
-                  objectFit: "contain",
-                }}
-              />
-            </div>
-            <Button
-              className={styles.button}
-              text="Connect"
-              onClick={onConnect}
-              loading={loading}
-              loadingText="Connecting..."
-            />
-          </>
-        )}
-        {userInfo && (
+        <div className={styles.logo}>
+          <Image
+            src={logo}
+            alt="Selfy logo"
+            fill
+            style={{
+              objectFit: "contain",
+            }}
+          />
+        </div>
+        <Button
+          className={styles.button}
+          text="Connect"
+          onClick={onConnect}
+          loading={loading}
+          loadingText="Connecting..."
+        />
+        {/*userInfo && (
           <>
             {userInfo.profileImage && (
               <div className={styles.logo}>
@@ -143,7 +146,7 @@ export default function Home() {
               loadingText="Signing out..."
             />
           </>
-        )}
+            )*/}
       </div>
     </div>
   );
