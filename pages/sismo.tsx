@@ -1,25 +1,25 @@
 import Head from "next/head";
 import styles from "@/styles/Sismo.module.scss";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button } from "@/components/button/Button";
 import Image from "next/image";
 import logo from "@/public/images/selfy-logo.jpeg";
-import { Alert } from "@/components/alert/Alert";
-import { Input } from "@/components/input/Input";
 import {
   SismoConnectButton,
   AuthType,
   SismoConnectClientConfig,
-  SismoConnectResponse,
 } from "@sismo-core/sismo-connect-react";
+import { SafeAuthKitContext } from "./_app";
+import { claimBadgeWithSafeAuthKit } from "@/lib/selfy-badge";
+import { initSafeAuthKit } from "@/lib/safe-auth-kit";
 
 const config: SismoConnectClientConfig = {
   appId: process.env.NEXT_PUBLIC_SISMO_APP_ID!,
-  /*devMode: {
+  devMode: {
     // will use the Dev Sismo Data Vault https://dev.vault-beta.sismo.io/
     enabled: true,
     // overrides a group with these addresses
-    devGroups: [
+    /*devGroups: [
       {
         groupId: "0x42c768bb8ae79e4c5c05d3b51a4ec74a",
         data: {
@@ -27,12 +27,13 @@ const config: SismoConnectClientConfig = {
           "0x3162dC1A02869F653cedCEB5792D79E902B705fA": 2,
         },
       },
-    ],
-  },*/
+    ],*/
+  },
 };
 
 export default function Sismo() {
   const [proof, setProof] = useState<string>();
+  const { safeAuthKit } = useContext(SafeAuthKitContext);
 
   return (
     <div className={styles.container}>
@@ -50,9 +51,7 @@ export default function Sismo() {
           </div>
           <div className={styles.sismo__button}>
             <SismoConnectButton
-              //You will need to register an appId in the Factory
               appId={process.env.NEXT_PUBLIC_SISMO_APP_ID!}
-              //Request proofs from your users for a groupId
               claim={{
                 groupId: process.env.NEXT_PUBLIC_SISMO_GROUP_ID!,
               }}
@@ -60,21 +59,26 @@ export default function Sismo() {
                 authType: AuthType.VAULT,
               }}
               signature={{
-                message: "Your message",
+                message: safeAuthKit?.safeAuthData?.eoa || "",
               }}
-              //After user redirection get a response containing his proofs
-              onResponse={async (response: SismoConnectResponse) => {
-                console.log("Sismo response");
-                console.log(response);
-                //Send the response to your server to verify it
-                //thanks to the @sismo-core/sismo-connect-server package
-              }}
+              config={config}
               onResponseBytes={async (bytes: string) => {
                 console.log("Sismo response");
-                console.log(bytes);
-                setProof(bytes);
-                //Send the response to your contract to verify it
-                //thanks to the @sismo-core/sismo-connect-solidity package
+                const authKit = await initSafeAuthKit();
+                await authKit.signIn();
+                claimBadgeWithSafeAuthKit(
+                  authKit,
+                  bytes,
+                  process.env.NEXT_PUBLIC_SISMO_GROUP_ID!
+                ).then(
+                  (res) => {
+                    alert("Badge claimed!");
+                  },
+                  (err) => {
+                    alert("Failed to claim badge");
+                    console.log(err);
+                  }
+                );
               }}
             />
           </div>

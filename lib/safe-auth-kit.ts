@@ -14,8 +14,8 @@ export async function initSafeAuthKit() {
     web3AuthNetwork: "testnet",
     chainConfig: {
       chainNamespace: CHAIN_NAMESPACES.EIP155,
-      chainId: "0x13881",
-      rpcTarget: `https://rpc.ankr.com/polygon_mumbai`,
+      chainId: "0x5",
+      rpcTarget: `https://rpc.ankr.com/eth_goerli`,
     },
     uiConfig: {
       theme: "dark",
