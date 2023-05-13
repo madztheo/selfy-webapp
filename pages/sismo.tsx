@@ -15,7 +15,7 @@ import {
 
 const config: SismoConnectClientConfig = {
   appId: process.env.NEXT_PUBLIC_SISMO_APP_ID!,
-  devMode: {
+  /*devMode: {
     // will use the Dev Sismo Data Vault https://dev.vault-beta.sismo.io/
     enabled: true,
     // overrides a group with these addresses
@@ -28,7 +28,7 @@ const config: SismoConnectClientConfig = {
         },
       },
     ],
-  },
+  },*/
 };
 
 export default function Sismo() {
@@ -50,9 +50,11 @@ export default function Sismo() {
           </div>
           <div className={styles.sismo__button}>
             <SismoConnectButton
-              //Request proofs for this groupId
+              //You will need to register an appId in the Factory
+              appId={process.env.NEXT_PUBLIC_SISMO_APP_ID!}
+              //Request proofs from your users for a groupId
               claim={{
-                groupId: "0x42c768bb8ae79e4c5c05d3b51a4ec74a",
+                groupId: process.env.NEXT_PUBLIC_SISMO_GROUP_ID!,
               }}
               auth={{
                 authType: AuthType.VAULT,
@@ -60,7 +62,7 @@ export default function Sismo() {
               signature={{
                 message: "Your message",
               }}
-              config={config}
+              //After user redirection get a response containing his proofs
               onResponse={async (response: SismoConnectResponse) => {
                 console.log("Sismo response");
                 console.log(response);
