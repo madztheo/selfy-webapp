@@ -1,26 +1,7 @@
 import { Header } from "@/components/header/Header";
 import styles from "../../styles/Profile.module.scss";
 import Image from "next/image";
-import selfyBadge from "../../public/images/badges/selfy-badge.svg";
-
-const BADGES = [
-  {
-    name: "Selfy",
-    image: selfyBadge,
-  },
-  {
-    name: "Selfy",
-    image: selfyBadge,
-  },
-  {
-    name: "Selfy",
-    image: selfyBadge,
-  },
-  {
-    name: "Selfy",
-    image: selfyBadge,
-  },
-];
+import { getAvailableBadges } from "@/lib/selfy-badge";
 
 export default function Profile() {
   return (
@@ -34,7 +15,7 @@ export default function Profile() {
         <div className={styles.left}>
           <h2 className={styles.title}>My badges</h2>
           <div className={styles.badges}>
-            {BADGES.map((badge, index) => (
+            {getAvailableBadges().map((badge, index) => (
               <div className={styles.badge} key={index}>
                 <div className={styles.badge__icon}>
                   <Image

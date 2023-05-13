@@ -9,14 +9,7 @@ import {
   SismoConnectClientConfig,
   SismoConnectResponse,
 } from "@sismo-core/sismo-connect-react";
-
-const config: SismoConnectClientConfig = {
-  appId: process.env.NEXT_PUBLIC_SISMO_APP_ID!,
-  devMode: {
-    // will use the Dev Sismo Data Vault https://dev.vault-beta.sismo.io/
-    enabled: true,
-  },
-};
+import { config } from "@/lib/selfy-badge";
 
 export function Header({
   onSismoConnect,
