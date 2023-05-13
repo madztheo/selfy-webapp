@@ -16,8 +16,8 @@ import { defaultOptions, errorLink, httpLink } from "@/utils/apollo-client";
 
 export default function Home() {
   const { safeAuthKit, setSafeAuthKit } = useContext(AuthContext);
+  const { address, setAddress } = useContext(AuthContext);
   const [userInfo, setUserInfo] = useState<any>();
-  const [address, setAddress] = useState<string>();
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [lensAuthToken, setLensAuthToken] = useState();
@@ -87,7 +87,7 @@ export default function Home() {
     setLoading(true);
     await safeAuthKit.signIn();
     const userInfo = await safeAuthKit.getUserInfo();
-    setAddress(safeAuthKit.safeAuthData?.eoa);
+    setAddress(safeAuthKit.safeAuthData?.eoa as string);
     setUserInfo(userInfo);
     console.log(userInfo);
     setLoading(false);
@@ -108,6 +108,7 @@ export default function Home() {
     await safeAuthKit.signOut();
     setUserInfo(undefined);
     setLoading(false);
+    setAddress(undefined);
   };
 
   const onSignMessage = async () => {

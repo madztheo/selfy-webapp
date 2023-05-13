@@ -14,7 +14,6 @@ import { AuthContext } from "../_app";
 import { Button } from "@/components/button/Button";
 
 export default function Profile() {
-  const [address, setAddress] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [badges, setBadges] = useState<
     {
@@ -25,15 +24,16 @@ export default function Profile() {
     }[]
   >([]);
   const { sismoVaultId, setSismoVaultId } = useContext(AuthContext);
+  const { address, setAddress } = useContext(AuthContext)
 
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const authKit = await initSafeAuthKit();
-      await authKit.signIn();
-      const addr = authKit.safeAuthData?.eoa!;
-      setAddress(addr);
-      const res = await getBadges(addr);
+  //     const authKit = await initSafeAuthKit();
+  //     await authKit.signIn();
+  //     const addr = authKit.safeAuthData?.eoa!;
+  //     setAddress(addr);
+      const res = await getBadges(address as string);
       setBadges(res as any);
       setLoading(false);
     })();

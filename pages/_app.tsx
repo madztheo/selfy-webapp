@@ -9,11 +9,15 @@ export const AuthContext = createContext<{
   setSafeAuthKit: (safeAuthKit: SafeAuthKit<Web3AuthModalPack>) => void;
   sismoVaultId: string | undefined;
   setSismoVaultId: (vaultId: string) => void;
+  address: string | undefined;
+  setAddress: (address: string) => void;
 }>({
   safeAuthKit: undefined,
   setSafeAuthKit: () => {},
   sismoVaultId: undefined,
   setSismoVaultId: () => {},
+  address: undefined,
+  setAddress: () => {}
 });
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -23,6 +27,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [sismoVaultId, setSismoVaultId] = useState<string | undefined>(
     undefined
   );
+  const [address, setAddress] = useState<string | undefined>(undefined);
 
   return (
     <AuthContext.Provider
@@ -35,6 +40,10 @@ export default function App({ Component, pageProps }: AppProps) {
         setSismoVaultId: (value) => {
           setSismoVaultId(value);
         },
+        address,
+        setAddress: (value) => {
+          setAddress(value);
+        }
       }}
     >
       <Head>

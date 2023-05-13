@@ -13,6 +13,8 @@ import { config } from "@/lib/selfy-badge";
 import { initSafeAuthKit } from "@/lib/safe-auth-kit";
 import { useRouter } from "next/router";
 import cn from "classnames";
+import { useContext } from "react";
+import { AuthContext } from "@/pages/_app";
 
 function formatVaultId(vaultId: string) {
   return vaultId.slice(0, 6) + "..." + vaultId.slice(-4);
@@ -25,6 +27,9 @@ export function Header({
   vaultId: string;
   onSismoConnect: (vaultId: string) => void;
 }) {
+  const { safeAuthKit, setSafeAuthKit } = useContext(AuthContext);
+  const { address, setAddress } = useContext(AuthContext);
+
   const router = useRouter();
 
   return (
@@ -85,9 +90,13 @@ export function Header({
         <button
           className={styles.sign__out}
           onClick={async () => {
-            const authKit = await initSafeAuthKit();
-            await authKit.signOut();
+            if (safeAuthKit?.safeAuthData?.eoa) {
+              const authKit = await initSafeAuthKit();
+              await authKit.signOut();
+            }
+            setAddress("");
             router.replace("/");
+
           }}
         >
           <svg
