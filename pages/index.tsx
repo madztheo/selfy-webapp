@@ -1,3 +1,4 @@
+import React from "react";
 import Head from "next/head";
 import styles from "@/styles/Home.module.scss";
 import { useContext, useEffect, useState } from "react";
@@ -8,7 +9,6 @@ import logo from "@/public/images/selfy-logo.jpeg";
 import { Alert } from "@/components/alert/Alert";
 import { Input } from "@/components/input/Input";
 import { useRouter } from "next/router";
-import { SafeAuthKitContext } from "./_app";
 import { AuthContext } from "./_app";
 import { ApolloLens } from "@/lib/lens";
 import { ApolloClient, ApolloLink, InMemoryCache, from } from "@apollo/client";
@@ -31,7 +31,6 @@ export default function Home() {
   });
   const router = useRouter();
 
-
   useEffect(() => {
     (async () => {
       const authKit = await initSafeAuthKit();
@@ -40,12 +39,12 @@ export default function Home() {
 
     const authLink = new ApolloLink((operation, forward) => {
       const token = lensAuthToken;
-      console.log('jwt token:', token);
+      console.log("jwt token:", token);
 
       // Use the setContext method to set the HTTP headers.
       operation.setContext({
         headers: {
-          'x-access-token': token ? `Bearer ${token}` : '',
+          "x-access-token": token ? `Bearer ${token}` : "",
         },
       });
 
@@ -90,7 +89,7 @@ export default function Home() {
     const userInfo = await safeAuthKit.getUserInfo();
     setAddress(safeAuthKit.safeAuthData?.eoa);
     setUserInfo(userInfo);
-    console.log(userInfo)
+    console.log(userInfo);
     setLoading(false);
     setAlert({
       message: `Connected with address ${safeAuthKit.safeAuthData?.eoa}`,
