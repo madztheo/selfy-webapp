@@ -1,5 +1,5 @@
 import { SafeAuthKit, Web3AuthModalPack } from "@safe-global/auth-kit";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import selfyBadgeAbi from "../abi/selfy-badge.json";
 import { AuthType } from "@sismo-core/sismo-connect-react";
 import {
@@ -14,6 +14,12 @@ import zkBadgeRaave from "@/public/images/badges/zk_badge_raave.svg";
 import zkBadgeStaniLens from "@/public/images/badges/zk_badge_stani-lens.svg";
 import zkBadgePatricio from "@/public/images/badges/zk_badge_patricio.svg";
 import zkBadgeDydy from "@/public/images/badges/zk_badge_dydy.svg";
+import { Network, Alchemy } from "alchemy-sdk";
+
+const alchemy = new Alchemy({
+  apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY!,
+  network: Network.ETH_GOERLI,
+});
 
 export const config: SismoConnectClientConfig = {
   appId: process.env.NEXT_PUBLIC_SISMO_APP_ID!,
@@ -25,13 +31,22 @@ export const config: SismoConnectClientConfig = {
 
 const sismoConnect = SismoConnect(config);
 
-export function getSelfyBadgeContract(provider: ethers.providers.Web3Provider) {
+export function getSelfyBadgeContract(
+  provider: ethers.providers.Web3Provider | ethers.providers.JsonRpcProvider
+) {
   const contract = new ethers.Contract(
     process.env.NEXT_PUBLIC_SELFY_BADGE_CONTRACT!,
     selfyBadgeAbi,
     provider
   );
   return contract;
+}
+
+export function getJsonRPCProvider() {
+  const provider = new ethers.providers.JsonRpcProvider(
+    process.env.NEXT_PUBLIC_RPC_URL!
+  );
+  return provider;
 }
 
 export async function claimBadgeWithSafeAuthKit(
@@ -92,7 +107,13 @@ export async function getSismoProof() {
   return sismoConnect.getResponseBytes();
 }
 
+export function getTokenIdFromGroupId(groupId: string) {
+  const bytesSuffix = "00000000000000000000000000000000";
+  return BigInt(groupId + bytesSuffix).toString();
+}
+
 export function getAvailableBadges() {
+  const bytesSuffix = "00000000000000000000000000000000";
   return [
     {
       name: "Selfy Team",
@@ -135,4 +156,37 @@ export function getAvailableBadges() {
       groupId: "0x8837536887a7f6458977b10cc464df4b",
     },
   ];
+}
+
+// Get the NFT badges owned by an address with Alchemy SDK
+export async function getBadges(address: string) {
+  const { ownedNfts } = await alchemy.nft.getNftsForOwner(address);
+  const tokenIds = await getAvailableBadges().map((badge) =>
+    getTokenIdFromGroupId(badge.groupId)
+  );
+  const filteredNfts = ownedNfts
+    .map((x) => (tokenIds.includes(x.tokenId) ? x : null))
+    .filter((x) => x !== null);
+  console.log("filteredNfts", filteredNfts);
+  return getAvailableBadges()
+    .map((badge) => {
+      const nft = filteredNfts.find(
+        (x) => x?.tokenId === getTokenIdFromGroupId(badge.groupId)
+      );
+      if (!nft) {
+        return null;
+      }
+      return {
+        ...badge,
+        nft,
+      };
+    })
+    .filter((x) => x !== null);
+}
+
+export async function getBadgesToClaim(address: string) {
+  const badges = await getBadges(address);
+  return getAvailableBadges().filter(
+    (badge) => !badges.find((x) => x?.groupId === badge.groupId)
+  );
 }

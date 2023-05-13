@@ -8,10 +8,10 @@ import logo from "@/public/images/selfy-logo.jpeg";
 import { Alert } from "@/components/alert/Alert";
 import { Input } from "@/components/input/Input";
 import { useRouter } from "next/router";
-import { SafeAuthKitContext } from "./_app";
+import { AuthContext } from "./_app";
 
 export default function Home() {
-  const { safeAuthKit, setSafeAuthKit } = useContext(SafeAuthKitContext);
+  const { safeAuthKit, setSafeAuthKit } = useContext(AuthContext);
   const [userInfo, setUserInfo] = useState<any>();
   const [address, setAddress] = useState<string>();
   const [message, setMessage] = useState<string>("");

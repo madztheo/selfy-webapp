@@ -31,6 +31,11 @@
           font-size: 1.1em;
           font-weight: 500;
           &:hover {
+            color: change-color($primaryColor, $alpha: 0.5);
+          }
+        }
+        &.selected {
+          a {
             color: $primaryColor;
           }
         }
@@ -39,5 +44,26 @@
   }
   .button {
     margin-left: auto;
+  }
+  .vault__id {
+    margin-left: auto;
+    font-size: 1.1em;
+    font-weight: 400;
+    em {
+      font-weight: 600;
+      font-style: normal;
+      color: $secondaryColor;
+    }
+  }
+  .sign__out {
+    margin-left: 10px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    svg {
+      path {
+        fill: $secondaryColor;
+      }
+    }
   }
 }

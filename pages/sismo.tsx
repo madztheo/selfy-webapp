@@ -9,7 +9,7 @@ import {
   AuthType,
   SismoConnectClientConfig,
 } from "@sismo-core/sismo-connect-react";
-import { SafeAuthKitContext } from "./_app";
+import { AuthContext } from "./_app";
 import { claimBadgeWithSafeAuthKit } from "@/lib/selfy-badge";
 import { initSafeAuthKit } from "@/lib/safe-auth-kit";
 import { Header } from "@/components/header/Header";
@@ -34,7 +34,7 @@ const config: SismoConnectClientConfig = {
 
 export default function Sismo() {
   const [proof, setProof] = useState<string>();
-  const { safeAuthKit } = useContext(SafeAuthKitContext);
+  const { safeAuthKit } = useContext(AuthContext);
 
   return (
     <div className={styles.container}>
