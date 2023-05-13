@@ -8,7 +8,11 @@ import logo from "@/public/images/selfy-logo.jpeg";
 import { Alert } from "@/components/alert/Alert";
 import { Input } from "@/components/input/Input";
 import { useRouter } from "next/router";
+import { SafeAuthKitContext } from "./_app";
 import { AuthContext } from "./_app";
+import { ApolloLens } from "@/lib/lens";
+import { ApolloClient, ApolloLink, InMemoryCache, from } from "@apollo/client";
+import { defaultOptions, errorLink, httpLink } from "@/utils/apollo-client";
 
 export default function Home() {
   const { safeAuthKit, setSafeAuthKit } = useContext(AuthContext);
@@ -16,6 +20,8 @@ export default function Home() {
   const [address, setAddress] = useState<string>();
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [lensAuthToken, setLensAuthToken] = useState();
+  const [lens, setLens] = useState<ApolloLens>();
   const [alert, setAlert] = useState<{
     message: string;
     error: boolean;
@@ -25,12 +31,55 @@ export default function Home() {
   });
   const router = useRouter();
 
+
   useEffect(() => {
     (async () => {
       const authKit = await initSafeAuthKit();
       setSafeAuthKit(authKit);
     })();
+
+    const authLink = new ApolloLink((operation, forward) => {
+      const token = lensAuthToken;
+      console.log('jwt token:', token);
+
+      // Use the setContext method to set the HTTP headers.
+      operation.setContext({
+        headers: {
+          'x-access-token': token ? `Bearer ${token}` : '',
+        },
+      });
+
+      // Call the next link in the middleware chain.
+      return forward(operation);
+    });
+
+    const apolloClient = new ApolloClient({
+      link: from([errorLink, authLink, httpLink]),
+      cache: new InMemoryCache(),
+      defaultOptions: defaultOptions,
+    });
+
+    const apolloLens = new ApolloLens(apolloClient);
+    setLens(apolloLens);
   }, []);
+
+  const onLensLogin = async () => {
+    const authenticatedResult = await lens?.lensLogin();
+    setLensAuthToken(authenticatedResult.accessToken);
+
+    const profile = await lens?.getProfile();
+
+    setAddress(profile.data.profile.ownedBy);
+    setUserInfo(userInfo);
+    setLoading(false);
+    setAlert({
+      message: `Connected with address ${profile.data.profile.ownedBy}`,
+      error: false,
+    });
+    setTimeout(() => {
+      router.push("/profile");
+    }, 2000);
+  };
 
   const onConnect = async () => {
     if (!safeAuthKit) {
@@ -41,6 +90,7 @@ export default function Home() {
     const userInfo = await safeAuthKit.getUserInfo();
     setAddress(safeAuthKit.safeAuthData?.eoa);
     setUserInfo(userInfo);
+    console.log(userInfo)
     setLoading(false);
     setAlert({
       message: `Connected with address ${safeAuthKit.safeAuthData?.eoa}`,
@@ -104,6 +154,13 @@ export default function Home() {
           className={styles.button}
           text="Connect"
           onClick={onConnect}
+          loading={loading}
+          loadingText="Connecting..."
+        />
+        <Button
+          className={styles.button}
+          text="Log in with Lens"
+          onClick={onLensLogin}
           loading={loading}
           loadingText="Connecting..."
         />

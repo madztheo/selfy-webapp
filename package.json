@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.14",
     "@safe-global/auth-kit": "^1.0.0",
     "@safe-global/protocol-kit": "^1.0.1",
     "@sismo-core/sismo-connect-react": "^0.0.13",
@@ -17,6 +18,7 @@
     "@types/react-dom": "18.2.4",
     "@web3auth/base": "^4.6.0",
     "@web3auth/modal": "^4.6.2",
+    "@web3auth/no-modal": "^5.2.0",
     "@web3auth/openlogin-adapter": "^4.6.0",
     "alchemy-sdk": "^2.8.3",
     "classnames": "^2.3.2",
