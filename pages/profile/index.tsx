@@ -25,6 +25,7 @@ export default function Profile() {
     }[]
   >([]);
   const { sismoVaultId, setSismoVaultId } = useContext(AuthContext);
+  const [metamaskAddress, setMetamaskAddress] = useState("");
   const { address, setAddress } = useContext(AuthContext);
   const [tokenURI, setTokenURI] = useState(
     "https://noun-api.com/beta/pfp?background=0&head=0&body=13&accessory=100&glasses=7"
@@ -57,10 +58,10 @@ export default function Profile() {
   return (
     <div className={styles.container}>
       <Header
-        vaultId={sismoVaultId!}
-        onSismoConnect={(vaultId) => {
-          console.log("vaultId", vaultId);
-          setSismoVaultId(vaultId);
+        metamaskAddress={metamaskAddress!}
+        onConnectMetamask={(address) => {
+          console.log("metamaskAddress", address);
+          setMetamaskAddress(address);
         }}
       />
       <div className={styles.content}>
@@ -71,14 +72,7 @@ export default function Profile() {
               {badges.map((badge, index) => (
                 <div className={styles.badge} key={index}>
                   <div className={styles.badge__icon}>
-                    <Image
-                      src={badge.image}
-                      alt={badge.name}
-                      fill
-                      style={{
-                        objectFit: "contain",
-                      }}
-                    />
+                    <img src={badge.image} alt={badge.name} />
                   </div>
                   <p className={styles.badge__name}>{badge.name}</p>
                 </div>
