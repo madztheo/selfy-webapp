@@ -129,14 +129,7 @@ export default function Import() {
               {badges.map((badge, index) => (
                 <div className={styles.badge} key={index}>
                   <div className={styles.badge__icon}>
-                    <Image
-                      src={badge.image}
-                      alt={badge.name}
-                      fill
-                      style={{
-                        objectFit: "contain",
-                      }}
-                    />
+                    <img src={badge.image} alt={badge.name} />
                   </div>
                   <p className={styles.badge__name}>{badge.name}</p>
                   <Button

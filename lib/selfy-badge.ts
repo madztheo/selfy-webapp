@@ -205,7 +205,7 @@ export function getAvailableBadges() {
     },
     {
       name: "OP Airdrop recipient",
-      image: zkBadgeOpDrop,
+      image: "/images/badges/zk_badge-op-drop.svg",
       groupId: "0xc136f382afdc7ec5ab6a440d6b5ef4de",
     },
   ];
