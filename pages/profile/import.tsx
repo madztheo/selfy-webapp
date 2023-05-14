@@ -19,11 +19,13 @@ import { initSafeAuthKit } from "@/lib/safe-auth-kit";
 import { Alert } from "@/components/alert/Alert";
 import { Loading } from "@/components/loading/Loading";
 import { useRouter } from "next/router";
+import Ethers from "@/utils/ethers.service";
 
 export default function Import() {
   const { sismoVaultId, setSismoVaultId } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [minting, setMinting] = useState(false);
   const [metamaskAddress, setMetamaskAddress] = useState("");
   const [alert, setAlert] = useState({
     message: "",
@@ -37,9 +39,7 @@ export default function Import() {
       groupId: string;
     }[]
   >([]);
-  const [tokenURI, setTokenURI] = useState(
-    "https://noun-api.com/beta/pfp?background=0&head=0&body=13&accessory=100&glasses=7"
-  );
+  const [tokenURI, setTokenURI] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -106,6 +106,28 @@ export default function Import() {
     })();
   }, []);
 
+  const mintSnapshot = async () => {
+    try {
+      const ethers = new Ethers();
+      setMinting(true);
+      const tx = await ethers.snapshotContract.mint(tokenURI, {
+        value: ethers.utils.parseEther("0.01"),
+      });
+      await tx.wait();
+      setAlert({
+        message: "Minted successfully",
+        error: false,
+      });
+    } catch (error) {
+      console.log(error);
+      setAlert({
+        message: "Unable to mint at the moment",
+        error: true,
+      });
+    }
+    setMinting(false);
+  };
+
   return (
     <div className={styles.container}>
       <Alert
@@ -154,7 +176,14 @@ export default function Import() {
         <div className={styles.right}>
           <div className={styles.profile}>
             <img src={tokenURI} alt="" />
-            <Button className={styles.button} text="Mint" theme="white" />
+            <Button
+              className={styles.button}
+              text="Mint"
+              theme="white"
+              onClick={mintSnapshot}
+              loading={minting}
+              loadingText="Minting..."
+            />
           </div>
         </div>
       </div>

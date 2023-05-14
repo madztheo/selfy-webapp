@@ -13,9 +13,11 @@ import { Loading } from "@/components/loading/Loading";
 import { AuthContext } from "../_app";
 import { Button } from "@/components/button/Button";
 import Ethers from "@/utils/ethers.service";
+import { Alert } from "@/components/alert/Alert";
 
 export default function Profile() {
   const [loading, setLoading] = useState(false);
+  const [minting, setMinting] = useState(false);
   const [badges, setBadges] = useState<
     {
       tokenId: string;
@@ -27,9 +29,11 @@ export default function Profile() {
   const { sismoVaultId, setSismoVaultId } = useContext(AuthContext);
   const [metamaskAddress, setMetamaskAddress] = useState("");
   const { address, setAddress } = useContext(AuthContext);
-  const [tokenURI, setTokenURI] = useState(
-    "https://noun-api.com/beta/pfp?background=0&head=0&body=13&accessory=100&glasses=7"
-  );
+  const [tokenURI, setTokenURI] = useState("");
+  const [alert, setAlert] = useState({
+    message: "",
+    error: false,
+  });
 
   useEffect(() => {
     (async () => {
@@ -51,12 +55,35 @@ export default function Profile() {
   }, []);
 
   const mintSnapshot = async () => {
-    const ethers = new Ethers();
-    await ethers.snapshotContract.mint(tokenURI, {value: ethers.utils.parseEther("0.01")})
-  }
+    try {
+      const ethers = new Ethers();
+      setMinting(true);
+      const tx = await ethers.snapshotContract.mint(tokenURI, {
+        value: ethers.utils.parseEther("0.01"),
+      });
+      await tx.wait();
+      setAlert({
+        message: "Minted successfully",
+        error: false,
+      });
+    } catch (error) {
+      console.log(error);
+      setAlert({
+        message: "Unable to mint at the moment",
+        error: true,
+      });
+    }
+    setMinting(false);
+  };
 
   return (
     <div className={styles.container}>
+      <Alert
+        message={alert.message}
+        visible={!!alert.message}
+        isError={alert.error}
+        onClose={() => setAlert({ message: "", error: false })}
+      />
       <Header
         metamaskAddress={metamaskAddress!}
         onConnectMetamask={(address) => {
@@ -84,7 +111,14 @@ export default function Profile() {
         <div className={styles.right}>
           <div className={styles.profile}>
             <img src={tokenURI} alt="" />
-            <Button className={styles.button} text="Mint" theme="white" onClick={mintSnapshot} />
+            <Button
+              className={styles.button}
+              text="Mint"
+              theme="white"
+              onClick={mintSnapshot}
+              loading={minting}
+              loadingText="Minting..."
+            />
           </div>
         </div>
       </div>
