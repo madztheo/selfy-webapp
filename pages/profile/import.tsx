@@ -7,6 +7,8 @@ import {
   claimBadgeWithSafeAuthKit,
   getAvailableBadges,
   getBadgesToClaim,
+  getJsonRPCProvider,
+  getNFTProfileUri,
   getSismoProof,
   getSismoProofBytes,
   requestSismoProof,
@@ -34,6 +36,9 @@ export default function Import() {
       groupId: string;
     }[]
   >([]);
+  const [tokenURI, setTokenURI] = useState(
+    "https://noun-api.com/beta/pfp?background=0&head=0&body=13&accessory=100&glasses=7"
+  );
 
   useEffect(() => {
     (async () => {
@@ -41,9 +46,11 @@ export default function Import() {
       const authKit = await initSafeAuthKit();
       await authKit.signIn();
       const addr = authKit.safeAuthData?.eoa!;
+      /*getNFTProfileUri(addr).then((uri) => {
+        setTokenURI(uri);
+      });*/
       const res = await getBadgesToClaim(addr);
       setBadges(res as any);
-      setLoading(false);
       const bytesProof = getSismoProofBytes();
       const proof = getSismoProof();
       if (proof && bytesProof) {
@@ -53,21 +60,38 @@ export default function Import() {
           const _proof = proof.proofs[0];
           const claim = _proof.claims ? _proof.claims[0] : undefined;
           if (claim) {
-            await claimBadgeWithSafeAuthKit(
-              authKit,
-              bytesProof,
-              claim.groupId!
-            );
-            setBadges((prev) =>
-              prev.filter((badge) => badge.groupId !== claim.groupId)
-            );
-            setAlert({
-              message: "Badge claimed!",
-              error: false,
+            const res = await fetch("/api/badge/airdrop", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                address: authKit.safeAuthData?.eoa,
+                sismoResponse: bytesProof,
+                groupId: claim.groupId,
+              }),
             });
-            setTimeout(() => {
-              router.push("/profile");
-            }, 2000);
+            if (res.ok) {
+              const { tx: txHash } = await res.json();
+              const provider = getJsonRPCProvider();
+              const tx = await provider.getTransaction(txHash);
+              await tx.wait();
+              setBadges((prev) =>
+                prev.filter((badge) => badge.groupId !== claim.groupId)
+              );
+              setAlert({
+                message: "Badge claimed!",
+                error: false,
+              });
+              setTimeout(() => {
+                router.push("/profile");
+              }, 2000);
+            } else {
+              setAlert({
+                message: "You cannot claim this badge",
+                error: true,
+              });
+            }
           }
         } catch (error) {
           console.log(error);
@@ -77,6 +101,7 @@ export default function Import() {
           });
         }
       }
+      setLoading(false);
     })();
   }, []);
 
@@ -134,10 +159,7 @@ export default function Import() {
         </div>
         <div className={styles.right}>
           <div className={styles.profile}>
-            <img
-              src="https://noun-api.com/beta/pfp?background=0&head=0&body=13&accessory=100&glasses=7"
-              alt=""
-            />
+            <img src={tokenURI} alt="" />
             <Button className={styles.button} text="Mint" theme="white" />
           </div>
         </div>

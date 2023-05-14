@@ -4,6 +4,7 @@ import Image from "next/image";
 import {
   getAvailableBadges,
   getBadges,
+  getNFTProfileUri,
   getTokenIdFromGroupId,
 } from "@/lib/selfy-badge";
 import { useContext, useEffect, useState } from "react";
@@ -24,6 +25,9 @@ export default function Profile() {
   >([]);
   const { sismoVaultId, setSismoVaultId } = useContext(AuthContext);
   const { address, setAddress } = useContext(AuthContext);
+  const [tokenURI, setTokenURI] = useState(
+    "https://noun-api.com/beta/pfp?background=0&head=0&body=13&accessory=100&glasses=7"
+  );
 
   useEffect(() => {
     (async () => {
@@ -35,6 +39,9 @@ export default function Profile() {
         addr = authKit.safeAuthData?.eoa!;
         setAddress(addr);
       }
+      /*getNFTProfileUri(addr).then((uri) => {
+        setTokenURI(uri);
+      });*/
       const res = await getBadges(addr);
       setBadges(res as any);
       setLoading(false);
@@ -76,10 +83,7 @@ export default function Profile() {
         </div>
         <div className={styles.right}>
           <div className={styles.profile}>
-            <img
-              src="https://noun-api.com/beta/pfp?background=0&head=0&body=13&accessory=100&glasses=7"
-              alt=""
-            />
+            <img src={tokenURI} alt="" />
             <Button className={styles.button} text="Mint" theme="white" />
           </div>
         </div>

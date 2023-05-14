@@ -13,7 +13,11 @@ import { AuthContext } from "./_app";
 import { ApolloLens } from "@/lib/lens";
 import { ApolloClient, ApolloLink, InMemoryCache, from } from "@apollo/client";
 import { defaultOptions, errorLink, httpLink } from "@/utils/apollo-client";
-import { hasProfileNFT, mintProfileNFT } from "@/lib/selfy-badge";
+import {
+  getJsonRPCProvider,
+  hasProfileNFT,
+  mintProfileNFT,
+} from "@/lib/selfy-badge";
 import { ethers } from "ethers";
 
 export default function Home() {
@@ -91,49 +95,48 @@ export default function Home() {
     const userInfo = await safeAuthKit.getUserInfo();
     setAddress(safeAuthKit.safeAuthData?.eoa as string);
     setUserInfo(userInfo);
-    console.log(userInfo);
     const skipProfileNFTMint = await hasProfileNFT(
       safeAuthKit.safeAuthData?.eoa as string
     );
     if (!skipProfileNFTMint) {
-      await mintProfileNFT(
-        new ethers.providers.Web3Provider(safeAuthKit.getProvider()!)
-      );
+      const res = await fetch("/api/profile/airdrop", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          address: safeAuthKit.safeAuthData?.eoa as string,
+        }),
+      });
+      if (res.ok) {
+        const { tx: txHash } = await res.json();
+        const provider = getJsonRPCProvider();
+        const tx = await provider.getTransaction(txHash);
+        await tx.wait();
+        setLoading(false);
+        setAlert({
+          message: `Connected with address ${safeAuthKit.safeAuthData?.eoa}`,
+          error: false,
+        });
+        setTimeout(() => {
+          router.push("/profile");
+        }, 2000);
+      } else {
+        setAlert({
+          message: `Unable to complete your profile creation`,
+          error: true,
+        });
+      }
+    } else {
+      setAlert({
+        message: `Connected with address ${safeAuthKit.safeAuthData?.eoa}`,
+        error: false,
+      });
+      setTimeout(() => {
+        router.push("/profile");
+      }, 2000);
     }
     setLoading(false);
-    setAlert({
-      message: `Connected with address ${safeAuthKit.safeAuthData?.eoa}`,
-      error: false,
-    });
-    setTimeout(() => {
-      router.push("/profile");
-    }, 2000);
-  };
-
-  const onSignOut = async () => {
-    if (!safeAuthKit) {
-      return;
-    }
-    setLoading(true);
-    await safeAuthKit.signOut();
-    setUserInfo(undefined);
-    setLoading(false);
-    setAddress(undefined);
-  };
-
-  const onSignMessage = async () => {
-    if (!safeAuthKit) {
-      return;
-    }
-    const signature = await signMessage(safeAuthKit, message);
-    console.log("signature", signature);
-    setAlert({
-      message: `Signature: ${signature}`,
-      error: false,
-    });
-    setTimeout(() => {
-      router.push("/sismo");
-    }, 2000);
   };
 
   return (

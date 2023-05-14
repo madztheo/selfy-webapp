@@ -230,7 +230,7 @@ export async function getBadgesToClaim(address: string) {
 
 export async function hasProfileNFT(address: string) {
   const tokenId = await getNFTProfile(address);
-  return tokenId !== undefined;
+  return !!tokenId;
 }
 
 export async function mintProfileNFT(provider: ethers.providers.Web3Provider) {
@@ -239,4 +239,12 @@ export async function mintProfileNFT(provider: ethers.providers.Web3Provider) {
   const contract = getSelfyProfileContract(provider);
   const tx = await contract.connect(signer).createSelfyProfile(address);
   await tx.wait();
+}
+
+export async function getNFTProfileUri(address: string) {
+  const provider = getJsonRPCProvider();
+  const contract = getSelfyProfileContract(provider);
+  const tokenId = await getNFTProfile(address);
+  const uri = await contract.tokenURI(tokenId);
+  return uri;
 }
