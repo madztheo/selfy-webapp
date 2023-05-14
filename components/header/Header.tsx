@@ -9,11 +9,11 @@ import {
   SismoConnectClientConfig,
   SismoConnectResponse,
 } from "@sismo-core/sismo-connect-react";
-import { config } from "@/lib/selfy-badge";
+import { config, connectToMetamask } from "@/lib/selfy-badge";
 import { initSafeAuthKit } from "@/lib/safe-auth-kit";
 import { useRouter } from "next/router";
 import cn from "classnames";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/pages/_app";
 
 function formatVaultId(vaultId: string) {
@@ -21,16 +21,30 @@ function formatVaultId(vaultId: string) {
 }
 
 export function Header({
-  vaultId,
-  onSismoConnect,
+  metamaskAddress,
+  onConnectMetamask,
 }: {
-  vaultId: string;
-  onSismoConnect: (vaultId: string) => void;
+  metamaskAddress: string;
+  onConnectMetamask: (address: string) => void;
 }) {
   const { safeAuthKit, setSafeAuthKit } = useContext(AuthContext);
   const { address, setAddress } = useContext(AuthContext);
 
   const router = useRouter();
+
+  useEffect(() => {
+    (async () => {
+      const { provider, signer } = await connectToMetamask();
+      const address = await signer.getAddress();
+      onConnectMetamask(address);
+    })();
+  }, []);
+
+  const onConnectWallet = async () => {
+    const { provider, signer } = await connectToMetamask(true);
+    const address = await signer.getAddress();
+    onConnectMetamask(address);
+  };
 
   return (
     <header className={styles.container}>
@@ -64,26 +78,17 @@ export function Header({
           </li>
         </ul>
       </nav>
-      {!vaultId && (
-        <div className={styles.button}>
-          <SismoConnectButton
-            appId={process.env.NEXT_PUBLIC_SISMO_APP_ID!}
-            auth={{
-              authType: AuthType.VAULT,
-            }}
-            config={config}
-            onResponse={async (response: SismoConnectResponse) => {
-              const proof = response.proofs[0];
-              const auths = proof.auths;
-              const vaultId = auths && auths.length > 0 ? auths[0].userId! : "";
-              onSismoConnect(vaultId);
-            }}
-          />
-        </div>
+      {!metamaskAddress && (
+        <Button
+          className={styles.button}
+          theme="secondary"
+          text="Connect wallet"
+          onClick={onConnectWallet}
+        />
       )}
-      {vaultId && (
+      {metamaskAddress && (
         <p className={styles.vault__id}>
-          Sismo Id: <em>{formatVaultId(vaultId)}</em>
+          Metamask: <em>{formatVaultId(metamaskAddress)}</em>
         </p>
       )}
       {
@@ -96,7 +101,6 @@ export function Header({
             }
             setAddress("");
             router.replace("/");
-
           }}
         >
           <svg

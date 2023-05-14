@@ -111,8 +111,12 @@ export async function claimBadge(
   await tx.wait();
 }
 
-export async function connectToMetamask() {
+export async function connectToMetamask(showWallet = true) {
   const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+  if (showWallet) {
+    // request to connect to Metamask
+    await (window as any).ethereum.request({ method: "eth_requestAccounts" });
+  }
   const signer = provider.getSigner();
   return {
     provider,

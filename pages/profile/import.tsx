@@ -24,6 +24,7 @@ export default function Import() {
   const { sismoVaultId, setSismoVaultId } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [metamaskAddress, setMetamaskAddress] = useState("");
   const [alert, setAlert] = useState({
     message: "",
     error: false,
@@ -114,10 +115,10 @@ export default function Import() {
         onClose={() => setAlert({ message: "", error: false })}
       />
       <Header
-        vaultId={sismoVaultId!}
-        onSismoConnect={(vaultId) => {
-          console.log("vaultId", vaultId);
-          setSismoVaultId(vaultId);
+        metamaskAddress={metamaskAddress!}
+        onConnectMetamask={(address) => {
+          console.log("metamaskAddress", address);
+          setMetamaskAddress(address);
         }}
       />
       <div className={styles.content}>
