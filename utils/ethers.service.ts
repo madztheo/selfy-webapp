@@ -1,6 +1,7 @@
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 
-import snapshotAbi from '../abi/selfy-snapshot.json';
+import snapshotAbi from "../abi/selfy-snapshot.json";
+import ghoAbi from "../abi/gho.json";
 
 declare global {
   interface Window {
@@ -13,7 +14,8 @@ class Ethers {
   provider: ethers.providers.JsonRpcProvider;
   signer: ethers.providers.JsonRpcSigner;
   utils: typeof ethers.utils;
-  snapshotContract : ethers.Contract;
+  snapshotContract: ethers.Contract;
+  ghoContract: ethers.Contract;
 
   // constructor instantiantes the underlying ethers provider and signer
   // and connects to the contract
@@ -22,7 +24,16 @@ class Ethers {
     this.utils = ethers.utils;
     this.signer = this.provider.getSigner();
 
-    this.snapshotContract = new ethers.Contract(process.env.NEXT_PUBLIC_SELFY_SNAPSHOT_CONTRACT as unknown as string,snapshotAbi, this.signer) 
+    this.snapshotContract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_SELFY_SNAPSHOT_GHO_CONTRACT as unknown as string,
+      snapshotAbi,
+      this.signer
+    );
+    this.ghoContract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_GHO_TOKEN_ADDRESS as unknown as string,
+      ghoAbi,
+      this.signer
+    );
     this.connect();
   }
 
@@ -31,9 +42,8 @@ class Ethers {
   }
 
   async connect() {
-    if (typeof window.ethereum !== 'undefined') {
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-
+    if (typeof window.ethereum !== "undefined") {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
     }
   }
 }

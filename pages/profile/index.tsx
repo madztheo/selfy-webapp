@@ -58,9 +58,15 @@ export default function Profile() {
     try {
       const ethers = new Ethers();
       setMinting(true);
-      const tx = await ethers.snapshotContract.mint(tokenURI, {
-        value: ethers.utils.parseEther("0.01"),
-      });
+      const approveTx = await ethers.ghoContract.approve(
+        ethers.snapshotContract.address,
+        ethers.utils.parseEther("0.01")
+      );
+      await approveTx.wait();
+      const tx = await ethers.snapshotContract.mint(
+        tokenURI,
+        ethers.utils.parseEther("0.01")
+      );
       await tx.wait();
       setAlert({
         message: "Minted successfully",

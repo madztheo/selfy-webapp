@@ -73,10 +73,14 @@ export default function Import() {
               }),
             });
             if (res.ok) {
-              const { tx: txHash } = await res.json();
-              const provider = getJsonRPCProvider();
-              const tx = await provider.getTransaction(txHash);
-              await tx.wait();
+              try {
+                const { tx: txHash } = await res.json();
+                const provider = getJsonRPCProvider();
+                const tx = await provider.getTransaction(txHash);
+                await tx.wait();
+              } catch (error) {
+                console.log(error);
+              }
               setBadges((prev) =>
                 prev.filter((badge) => badge.groupId !== claim.groupId)
               );
@@ -110,9 +114,15 @@ export default function Import() {
     try {
       const ethers = new Ethers();
       setMinting(true);
-      const tx = await ethers.snapshotContract.mint(tokenURI, {
-        value: ethers.utils.parseEther("0.01"),
-      });
+      const approveTx = await ethers.snapshotContract.approve(
+        ethers.snapshotContract.address,
+        ethers.utils.parseEther("0.01")
+      );
+      await approveTx.wait();
+      const tx = await ethers.snapshotContract.mint(
+        tokenURI,
+        ethers.utils.parseEther("0.01")
+      );
       await tx.wait();
       setAlert({
         message: "Minted successfully",
