@@ -41,9 +41,9 @@ export default function Profile() {
         addr = authKit.safeAuthData?.eoa!;
         setAddress(addr);
       }
-      /*getNFTProfileUri(addr).then((uri) => {
+      getNFTProfileUri(addr).then((uri) => {
         setTokenURI(uri);
-      });*/
+      });
       const res = await getBadges(addr);
       setBadges(res as any);
       setLoading(false);

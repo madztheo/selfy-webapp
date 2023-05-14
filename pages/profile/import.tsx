@@ -47,9 +47,9 @@ export default function Import() {
       const authKit = await initSafeAuthKit();
       await authKit.signIn();
       const addr = authKit.safeAuthData?.eoa!;
-      /*getNFTProfileUri(addr).then((uri) => {
+      getNFTProfileUri(addr).then((uri) => {
         setTokenURI(uri);
-      });*/
+      });
       const res = await getBadgesToClaim(addr);
       setBadges(res as any);
       const bytesProof = getSismoProofBytes();
