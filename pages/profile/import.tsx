@@ -114,7 +114,7 @@ export default function Import() {
     try {
       const ethers = new Ethers();
       setMinting(true);
-      const approveTx = await ethers.snapshotContract.approve(
+      const approveTx = await ethers.ghoContract.approve(
         ethers.snapshotContract.address,
         ethers.utils.parseEther("0.01")
       );
