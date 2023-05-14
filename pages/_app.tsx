@@ -10,14 +10,14 @@ export const AuthContext = createContext<{
   sismoVaultId: string | undefined;
   setSismoVaultId: (vaultId: string) => void;
   address: string | undefined;
-  setAddress: (address: string) => void;
+  setAddress: (address: string | undefined) => void;
 }>({
   safeAuthKit: undefined,
   setSafeAuthKit: () => {},
   sismoVaultId: undefined,
   setSismoVaultId: () => {},
   address: undefined,
-  setAddress: () => {}
+  setAddress: () => {},
 });
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -43,7 +43,7 @@ export default function App({ Component, pageProps }: AppProps) {
         address,
         setAddress: (value) => {
           setAddress(value);
-        }
+        },
       }}
     >
       <Head>

@@ -8,7 +8,6 @@ import {
 } from "@/lib/selfy-badge";
 import { useContext, useEffect, useState } from "react";
 import { initSafeAuthKit } from "@/lib/safe-auth-kit";
-import { OwnedNft } from "alchemy-sdk";
 import { Loading } from "@/components/loading/Loading";
 import { AuthContext } from "../_app";
 import { Button } from "@/components/button/Button";
@@ -17,23 +16,26 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [badges, setBadges] = useState<
     {
-      nft: OwnedNft | undefined | null;
+      tokenId: string;
       name: string;
       image: any;
       groupId: string;
     }[]
   >([]);
   const { sismoVaultId, setSismoVaultId } = useContext(AuthContext);
-  const { address, setAddress } = useContext(AuthContext)
+  const { address, setAddress } = useContext(AuthContext);
 
   useEffect(() => {
     (async () => {
       setLoading(true);
-  //     const authKit = await initSafeAuthKit();
-  //     await authKit.signIn();
-  //     const addr = authKit.safeAuthData?.eoa!;
-  //     setAddress(addr);
-      const res = await getBadges(address as string);
+      let addr = address;
+      if (!addr) {
+        const authKit = await initSafeAuthKit();
+        await authKit.signIn();
+        addr = authKit.safeAuthData?.eoa!;
+        setAddress(addr);
+      }
+      const res = await getBadges(addr);
       setBadges(res as any);
       setLoading(false);
     })();

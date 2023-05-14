@@ -13,6 +13,8 @@ import { AuthContext } from "./_app";
 import { ApolloLens } from "@/lib/lens";
 import { ApolloClient, ApolloLink, InMemoryCache, from } from "@apollo/client";
 import { defaultOptions, errorLink, httpLink } from "@/utils/apollo-client";
+import { hasProfileNFT, mintProfileNFT } from "@/lib/selfy-badge";
+import { ethers } from "ethers";
 
 export default function Home() {
   const { safeAuthKit, setSafeAuthKit } = useContext(AuthContext);
@@ -90,6 +92,14 @@ export default function Home() {
     setAddress(safeAuthKit.safeAuthData?.eoa as string);
     setUserInfo(userInfo);
     console.log(userInfo);
+    const skipProfileNFTMint = await hasProfileNFT(
+      safeAuthKit.safeAuthData?.eoa as string
+    );
+    if (!skipProfileNFTMint) {
+      await mintProfileNFT(
+        new ethers.providers.Web3Provider(safeAuthKit.getProvider()!)
+      );
+    }
     setLoading(false);
     setAlert({
       message: `Connected with address ${safeAuthKit.safeAuthData?.eoa}`,

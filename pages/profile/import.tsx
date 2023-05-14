@@ -8,25 +8,27 @@ import {
   getAvailableBadges,
   getBadgesToClaim,
   getSismoProof,
+  getSismoProofBytes,
   requestSismoProof,
 } from "@/lib/selfy-badge";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../_app";
 import { initSafeAuthKit } from "@/lib/safe-auth-kit";
 import { Alert } from "@/components/alert/Alert";
-import { OwnedNft } from "alchemy-sdk";
 import { Loading } from "@/components/loading/Loading";
+import { useRouter } from "next/router";
 
 export default function Import() {
   const { sismoVaultId, setSismoVaultId } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const [alert, setAlert] = useState({
     message: "",
     error: false,
   });
   const [badges, setBadges] = useState<
     {
-      nft: OwnedNft | undefined | null;
+      tokenId: string;
       name: string;
       image: any;
       groupId: string;
@@ -42,21 +44,31 @@ export default function Import() {
       const res = await getBadgesToClaim(addr);
       setBadges(res as any);
       setLoading(false);
-    })();
-    getSismoProof().then(async (proof) => {
-      if (proof) {
+      const bytesProof = getSismoProofBytes();
+      const proof = getSismoProof();
+      if (proof && bytesProof) {
         try {
           const authKit = await initSafeAuthKit();
           await authKit.signIn();
-          await claimBadgeWithSafeAuthKit(
-            authKit,
-            proof,
-            process.env.NEXT_PUBLIC_SISMO_GROUP_ID!
-          );
-          setAlert({
-            message: "Badge claimed!",
-            error: false,
-          });
+          const _proof = proof.proofs[0];
+          const claim = _proof.claims ? _proof.claims[0] : undefined;
+          if (claim) {
+            await claimBadgeWithSafeAuthKit(
+              authKit,
+              bytesProof,
+              claim.groupId!
+            );
+            setBadges((prev) =>
+              prev.filter((badge) => badge.groupId !== claim.groupId)
+            );
+            setAlert({
+              message: "Badge claimed!",
+              error: false,
+            });
+            setTimeout(() => {
+              router.push("/profile");
+            }, 2000);
+          }
         } catch (error) {
           console.log(error);
           setAlert({
@@ -65,7 +77,7 @@ export default function Import() {
           });
         }
       }
-    });
+    })();
   }, []);
 
   return (

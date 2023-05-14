@@ -13,6 +13,7 @@
     "@safe-global/auth-kit": "^1.0.0",
     "@safe-global/protocol-kit": "^1.0.1",
     "@sismo-core/sismo-connect-react": "^0.0.13",
+    "@sismo-core/sismo-connect-server": "^0.0.11",
     "@types/node": "20.1.3",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
