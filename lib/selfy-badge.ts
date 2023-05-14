@@ -16,6 +16,7 @@ import zkBadgeStaniLens from "@/public/images/badges/zk_badge_stani-lens.svg";
 import zkBadgePatricio from "@/public/images/badges/zk_badge_patricio.svg";
 import zkBadgeDydy from "@/public/images/badges/zk_badge_dydy.svg";
 import zkBadgeOpDrop from "@/public/images/badges/zk_badge-op-drop.svg";
+import ipfsCIDs from "@/public/images/badges/ipfs_cids.json";
 
 export const config: SismoConnectClientConfig = {
   appId: process.env.NEXT_PUBLIC_SISMO_APP_ID!,
@@ -152,46 +153,50 @@ export function getTokenIdFromGroupId(groupId: string) {
   return BigInt(groupId + bytesSuffix).toString();
 }
 
+export function getIPFSUrl(cid: string) {
+  return `https://${cid}.ipfs.nftstorage.link/`;
+}
+
 export function getAvailableBadges() {
   return [
     {
       name: "Selfy Team",
-      image: zkBadgeSelfy,
+      image: getIPFSUrl(ipfsCIDs.zkBadges.zkBadgeSelfy),
       groupId: "0xc728917ffa7be874a35d9ef21156f83f",
     },
     {
       name: "rAAVE attendees",
-      image: zkBadgeRaave,
+      image: getIPFSUrl(ipfsCIDs.zkBadges.zkBadgeRaave),
       groupId: "0xcde5892370aeb8f486b5d85a519aaa1a",
     },
     {
       name: "Gnosis chain forum membership",
-      image: zkBadgeGnosisForum,
+      image: getIPFSUrl(ipfsCIDs.zkBadges.zkBadgeGnosisForum),
       groupId: "0xcc8ebc2306beea2575e1d8fa4565f51c",
     },
     {
       name: "Stani.lens follower",
-      image: zkBadgeStaniLens,
+      image: getIPFSUrl(ipfsCIDs.zkBadges.zkBadgeStaniLens),
       groupId: "0xa2822490455d56197d0453d8803527bb",
     },
     {
       name: "Nouns DAO NFT Holder",
-      image: zkBadgeNouns,
+      image: getIPFSUrl(ipfsCIDs.zkBadges.zkBadgeNouns),
       groupId: "0x311ece950f9ec55757eb95f3182ae5e2",
     },
     {
       name: "Events in common with dydymoon.lens",
-      image: zkBadgeDydy,
+      image: getIPFSUrl(ipfsCIDs.zkBadges.zkBadgeDydy),
       groupId: "0x7efe7e4daa1ea46579c661d2a8d8493d",
     },
     {
       name: "Luchadores DAO voter",
-      image: zkBadgeLucha,
+      image: getIPFSUrl(ipfsCIDs.zkBadges.zkBadgeLucha),
       groupId: "0x13b4551a75e0e672a9a89fca94160429",
     },
     {
       name: "Main events attendees",
-      image: zkBadgePatricio,
+      image: getIPFSUrl(ipfsCIDs.zkBadges.zkBadgePatricio),
       groupId: "0x8837536887a7f6458977b10cc464df4b",
     },
     {
