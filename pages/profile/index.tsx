@@ -12,6 +12,7 @@ import { initSafeAuthKit } from "@/lib/safe-auth-kit";
 import { Loading } from "@/components/loading/Loading";
 import { AuthContext } from "../_app";
 import { Button } from "@/components/button/Button";
+import Ethers from "@/utils/ethers.service";
 
 export default function Profile() {
   const [loading, setLoading] = useState(false);
@@ -47,6 +48,11 @@ export default function Profile() {
       setLoading(false);
     })();
   }, []);
+
+  const mintSnapshot = async () => {
+    const ethers = new Ethers();
+    await ethers.snapshotContract.mint(tokenURI, {value: ethers.utils.parseEther("0.01")})
+  }
 
   return (
     <div className={styles.container}>
@@ -84,7 +90,7 @@ export default function Profile() {
         <div className={styles.right}>
           <div className={styles.profile}>
             <img src={tokenURI} alt="" />
-            <Button className={styles.button} text="Mint" theme="white" />
+            <Button className={styles.button} text="Mint" theme="white" onClick={mintSnapshot} />
           </div>
         </div>
       </div>
