@@ -15,6 +15,7 @@ import zkBadgeRaave from "@/public/images/badges/zk_badge_raave.svg";
 import zkBadgeStaniLens from "@/public/images/badges/zk_badge_stani-lens.svg";
 import zkBadgePatricio from "@/public/images/badges/zk_badge_patricio.svg";
 import zkBadgeDydy from "@/public/images/badges/zk_badge_dydy.svg";
+import zkBadgeOpDrop from "@/public/images/badges/zk_badge-op-drop.svg";
 
 export const config: SismoConnectClientConfig = {
   appId: process.env.NEXT_PUBLIC_SISMO_APP_ID!,
@@ -192,6 +193,11 @@ export function getAvailableBadges() {
       name: "Main events attendees",
       image: zkBadgePatricio,
       groupId: "0x8837536887a7f6458977b10cc464df4b",
+    },
+    {
+      name: "OP Airdrop recipient",
+      image: zkBadgeOpDrop,
+      groupId: "0xc136f382afdc7ec5ab6a440d6b5ef4de",
     },
   ];
 }
